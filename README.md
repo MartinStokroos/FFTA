@@ -40,7 +40,7 @@ dft3.ino | DFT with 16bit DDS, 10bit LUT
 dft4.ino | DFT with 16bit DDS, 8bit LUT
 
 # Benchmarks
-Shown in the table below are the measured execution times (in μs) of the different FFTA variants on the Arduino UNO for the full spectrum calculation (positive and negative frequencies).
+Shown in the table below are the measured execution times in μs of the different FFTA variants on the Arduino UNO for the full spectrum calculation (positive and negative frequencies).
 The data set that was used for bench-marking is: x = 0, 1, 0, 0, ...  [3].
 
 N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | remark
@@ -52,7 +52,7 @@ N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | remark
 
 ### Conclusion
 The computing time of *dft1 - dft4* scales with N^2 as expected. The speed ratio of dft1:dft2:dft3:dft4 is about: 26:3:1.5:1.
-The FFT algorithm scales with N*log(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be found or confirmed.
+The FFT algorithm scales with N*log(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be confirmed.
 
 # Library
 The FFTA library, including an example of an audio spectrum analyzer.
