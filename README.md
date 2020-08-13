@@ -3,7 +3,7 @@
 # Introduction
 This project is about a fast C implementation of the Discrete Fourier Transform[1], [2] for the Arduino. FFTA computes the DFT from *real* input data, for example data coming from the (10-bit) ADC.
 
-On the 8-points data set example: x=[0, 1, 0, 0, 0, 0, 0, 0], the MATLAB function fft(x) returns:
+With the 8-points data set example: x=[0, 1, 0, 0, 0, 0, 0, 0], the MATLAB function fft(x) will return:
 
 *1.0000+0.0000i   0.7071-0.7071i   0.0000-1.0000i  -0.7071-0.7071i  -1.0000+0.0000i  -0.7071+0.7071i   0.0000+1.0000i   0.7071+0.7071i*
 
@@ -34,10 +34,10 @@ There is no internal overflow check on numbers. The 10-bit range from the ADC is
 # Sketches
 Sketch | purpose
 ------ | -------
-dft1.ino | DFT - floating point implementation using sin() and cos() functions
-dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT)
-dft3.ino | DFT with 16bit DDS, 10bit LUT
-dft4.ino | DFT with 16bit DDS, 8bit LUT
+dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: double or int.
+dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data type: int.
+dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data type: int.
+dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data type: int.
 
 # Benchmarks
 Shown in the table below are the measured execution times in μs of the different FFTA variants on the Arduino UNO for the full spectrum calculation (positive and negative frequencies).
@@ -45,17 +45,17 @@ The data set that was used for bench-marking is: x = 0, 1, 0, 0, ...  [3].
 
 N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | remark
 -------------------------- | ---- | ---- | ---- | ---- | ------
-8 | 16436 | 1996 | 968 | 720 | input data type: int or double
-16 | 66040 | 7552 | 3500 | 2568 | input data type: int
-32 | 265880 | 29636 | 13548 | 9812 | input data type: int
-64 | 1073796 | 117644 | 53540 | 38600 | input data type: int
+8 | 16436 | 1996 | 968 | 720 |
+16 | 66040 | 7552 | 3500 | 2568 |
+32 | 265880 | 29636 | 13548 | 9812 |
+64 | 1073796 | 117644 | 53540 | 38600 |
 
 ### Conclusion
 The computing time of *dft1 - dft4* scales with N^2 as expected. The speed ratio of dft1:dft2:dft3:dft4 is about: 26:3:1.5:1.
 The FFT algorithm scales with N*log(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be confirmed.
 
 # Library
-The FFTA library, including an example of an audio spectrum analyzer.
+The FFTA library including an example for an audio spectrum analyzer.
 
 - under construction
 
