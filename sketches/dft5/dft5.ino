@@ -1,9 +1,9 @@
 /*
 *
-* File: dft4.ino
+* File: dft5.ino
 * Purpose: DFT with 16bit DDS and 8bit LUT
 * Version: 1.0.0
-* Date: 13-08-2020
+* Date: 14-08-2020
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
 *
@@ -86,8 +86,8 @@ const int sin_lut256[] PROGMEM = {
 
 
 int NS = NSAMPL;
-long ReX[NSAMPL];
-long ImX[NSAMPL];
+int ReX[NSAMPL]; //data type reduced to int
+int ImX[NSAMPL]; //data type reduced to int
 
 int L, K, M, N;
 double DC, A;
@@ -105,8 +105,8 @@ void setup() {
 
 
 void loop() {
-  L = NS-1; //full DFT
-  //L = (int)(NS/2); //single sided spectrum
+  //L = NS-1; //full DFT
+  L = (int)(NS/2); //single sided spectrum
 
   Serial.print("\nDFT t(us)= ");  
   t = micros();
@@ -146,7 +146,7 @@ void loop() {
   Serial.println();
   for(M=1; M<=L; M++)
     {
-    A = sqrt( sq(ImX[M])+sq(ReX[M]) ) / (127*NS);
+    A = sqrt( sq((long)ImX[M])+sq((long)ReX[M]) ) / (127*NS);
     Serial.println(A, 3);
     }
 

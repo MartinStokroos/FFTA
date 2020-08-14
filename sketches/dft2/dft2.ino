@@ -241,14 +241,11 @@ void loop() {
   Serial.println(DC, 3);
 
   Serial.println();
-  //t = micros();
   for(M=1; M<=L; M++)
     {
     A = sqrt( sq(ImX[M])+sq(ReX[M]) ) / (511*NS);
     Serial.println(A, 3);
     }
-  //Serial.print("ABS t(us)= ");  
-  //Serial.println(micros()-t);
 
   while(1) {};
 }
