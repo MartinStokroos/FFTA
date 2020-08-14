@@ -28,7 +28,7 @@ The DFT-core implemented in the C-language looks like:
 ![DFT-loops](figures/dft-loop.png  "DFT-loops")
 
 For FFTA the trigonometric functions and the angle stepping are replaced by Direct Digital Synthesis wave generators using a look-up table[4], which is super fast on an 8-bit micro-controller.
-Sketch *dft2* with the 32-bit phase accumulator has a very high frequency resolution and might be more accurate when transforming large input vectors (to be investigated).
+Sketch *dft2* with the 32-bit phase accumulator has a higher frequency step resolution and is because of this more accurate when transforming larger input vectors (to be investigated).
 
 There is no internal overflow check on numbers. Input data range must be verified. The recommended input data types are given in the table below under Sketches.
 
@@ -54,7 +54,7 @@ N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | dft5
 
 ### Conclusion
 The computing time of *dft1 - dft4* scales with N^2 as expected. The speed ratio of dft1:dft2:dft3:dft4 is about: 26:3:1.5:1.
-The known FFT algorithm scales with N*log(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be confirmed.
+The well known FFT algorithm scales with N*log2(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be confirmed. In the end, for many data points, FFT will win.
 
 # Library
 The FFTA library including an example for an audio spectrum analyzer.
