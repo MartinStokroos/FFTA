@@ -4,11 +4,11 @@
 This project is about a fast C implementation of the Discrete Fourier Transform[1], [2] for the Arduino. FFTA computes the DFT from *real* input data, for example data that comes from the (10-bit) ADC.
 The fastest time of an 8-point DFT with FFTA measured is 304μs.
 
-With the 8-points data set example: x=[0, 1, 0, 0, 0, 0, 0, 0], the MATLAB function fft(x) will return:
+With the 8-points data set example: x=[0, 1, 0, 0, 0, 0, 0, 0], the MATLAB function fft(x) returns:
 
 *1.0000+0.0000i   0.7071-0.7071i   0.0000-1.0000i  -0.7071-0.7071i  -1.0000+0.0000i  -0.7071+0.7071i   0.0000+1.0000i   0.7071+0.7071i*
 
-the *dft4* sketch for example, returns:
+the *dft4* sketch, for example, returns:
 
 *1.00,	0.00*
 *0.71,	-0.71*
@@ -27,22 +27,22 @@ The DFT-core implemented in the C-language looks like:
 
 ![DFT-loops](figures/dft-loop.png  "DFT-loops")
 
-For FFTA the trigonometric functions and the angle stepping are replaced by Direct Digital Synthesis wave generators using a look-up table[4], which are super fast on an 8-bit micro-controller.
+For FFTA the trigonometric functions and the angle stepping are replaced by Direct Digital Synthesis wave generators using a look-up table[4], which is super fast on an 8-bit micro-controller.
 Sketch *dft2* with the 32-bit phase accumulator has a very high frequency resolution and might be more accurate when transforming large input vectors (to be investigated).
 
-There is no internal overflow check on numbers. Input data ranges should be verified. The input data types are given in the table below under Sketches.
+There is no internal overflow check on numbers. Input data range must be verified. The recommended input data types are given in the table below under Sketches.
 
 # Sketches
 Sketch | purpose
 ------ | -------
-dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: double or int.
-dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data size is of type int.
-dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data size is of type int.
-dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data size is of type char.
-dft5.ino | DFT with 16bit DDS, 8bit LUT giving positive frequencies only. Internal ReX and ImX accumulators reduced to type int. Input data size is of type char.
+dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: double or int
+dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data size is of type int
+dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data size is of type int
+dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data size is of type char
+dft5.ino | DFT with 16bit DDS, 8bit LUT giving positive frequencies only. Internal ReX and ImX accumulators reduced to type int. Input data size is of type char
 
 # Benchmarks
-Shown in the table below are the measured execution times in μs of the different FFTA variants on the Arduino UNO for the full spectrum calculation (positive and negative frequencies).
+The measured execution times in μs of the different FFTA variants running on the Arduino UNO are shown in the table below. The times mentioned under *dft1 - dft4* are for the full spectrum calculation (positive and negative frequencies).
 The data set that was used for bench-marking is: x = 0, 1, 0, 0, ...  [3].
 
 N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | dft5
@@ -54,7 +54,7 @@ N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | dft5
 
 ### Conclusion
 The computing time of *dft1 - dft4* scales with N^2 as expected. The speed ratio of dft1:dft2:dft3:dft4 is about: 26:3:1.5:1.
-The FFT algorithm scales with N*log(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be confirmed.
+The known FFT algorithm scales with N*log(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be confirmed.
 
 # Library
 The FFTA library including an example for an audio spectrum analyzer.
