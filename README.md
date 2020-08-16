@@ -28,7 +28,7 @@ The DFT-core implemented in the C-language looks like:
 ![DFT-loops](figures/dft-loop.png  "DFT-loops")
 
 For FFTA the trigonometric functions and the angle stepping are replaced by Direct Digital Synthesis wave generators using a look-up table[4], which is super fast on an 8-bit micro-controller.
-Sketch *dft2* with the 32-bit phase accumulator has a higher frequency step resolution and is because of this more accurate when transforming larger input vectors (to be investigated).
+Sketch *dft2* with the 32-bit phase accumulator has a higher frequency step resolution and is because of this more accurate when transforming larger input vectors (to be confirmed).
 
 There is no internal overflow check on numbers. Input data range must be verified. The recommended input data types are given in the table below under Sketches.
 
