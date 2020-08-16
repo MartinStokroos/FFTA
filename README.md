@@ -36,10 +36,10 @@ There is no internal overflow check on numbers. Input data range must be verifie
 Sketch | purpose
 ------ | -------
 dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: *double* or *int*
-dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data size is of type *int*
-dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data size is of type *int*
-dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data size is of type *char*
-dft5.ino | DFT with 16bit DDS, 8bit LUT, outputs positive frequencies only. Internal ReX and ImX accumulators are reduced to type int. Input data size is of type *char*
+dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data is of type *int*
+dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data is of type *int*
+dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data is of type *char*
+dft5.ino | DFT with 16bit DDS, 8bit LUT, only calculates the positive frequencies. Internal ReX and ImX accumulators are reduced to type of *int*. Input data is of type *char*
 
 # Benchmarks
 The measured execution times in μs of the different FFTA variants running on the Arduino UNO are shown in the table below. The times mentioned under *dft1 - dft4* are for the full spectrum calculation (positive and negative frequencies).
