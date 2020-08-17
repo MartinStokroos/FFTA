@@ -1,8 +1,8 @@
 # FFTA - Fastest(?) Fourier Transform for Arduino
 
 # Introduction
-This project is about a fast C implementation of the Discrete Fourier Transform[1], [2] for the Arduino. FFTA computes the DFT from *real* input data, for example data that comes from the (10-bit) ADC.
-The fastest time of an 8-point DFT with FFTA measured is 304μs.
+This project is about a fast C implementation of the Discrete Fourier Transform[1],[2] for Arduino. A very clear and not mathematical explanation is given here[3].
+FFTA computes the DFT from *real* input data, for example data that comes from the (10-bit) ADC. The fastest time of an 8-point DFT with FFTA measured is 304μs.
 
 With the 8-points data set example: x=[0, 1, 0, 0, 0, 0, 0, 0], the MATLAB function fft(x) returns:
 
@@ -27,7 +27,7 @@ The DFT-core implemented in the C-language looks like:
 
 ![DFT-loops](figures/dft-loop.png  "DFT-loops")
 
-For FFTA the trigonometric functions and the angle stepping are replaced by Direct Digital Synthesis wave generators using a look-up table[4], which is super fast on an 8-bit micro-controller.
+For FFTA the trigonometric functions and the angle stepping are replaced by Direct Digital Synthesis wave generators using a look-up table[5], which is super fast on an 8-bit micro-controller.
 Sketch *dft2* with the 32-bit phase accumulator has a higher frequency step resolution and is because of this more accurate when transforming larger input vectors (to be confirmed).
 
 There is no internal overflow check on numbers. Input data range must be verified. The recommended input data types are given in the table below under Sketches.
@@ -43,7 +43,7 @@ dft5.ino | DFT with 16bit DDS, 8bit LUT, only calculates the positive frequencie
 
 # Benchmarks
 The measured execution times in μs of the different FFTA variants running on the Arduino UNO are shown in the table below. The times mentioned under *dft1 - dft4* are for the full spectrum calculation (positive and negative frequencies).
-The data set that was used for bench-marking is: x = 0, 1, 0, 0, ...  [3].
+The data set that was used for bench-marking is: x = 0, 1, 0, 0, ...  [4].
 
 N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | dft5
 --------------------------- | ---- | ---- | ---- | ---- | ----
@@ -66,6 +66,8 @@ The FFTA library including an example for an audio spectrum analyzer.
 
 [2]: http://www.fftw.org/
 
-[3]: http://www.sccon.ca/sccon/fft/fft3.htm
+[3]: https://www.earlevel.com/main/2002/08/31/a-gentle-introduction-to-the-fft/
 
-[4]: https://github.com/MartinStokroos/NativeDDS
+[4]: http://www.sccon.ca/sccon/fft/fft3.htm
+
+[5]: https://github.com/MartinStokroos/NativeDDS
