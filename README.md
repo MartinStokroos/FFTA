@@ -19,8 +19,8 @@ the *dft4* sketch, for example, returns:
 *0.00,	1.00*
 *0.71,	0.71*
 
-A very clear not mathematical explanation of FFT is given here[3].
-Basically, the DFT formula can be seen as two wave generators stepping in frequency and thereby averaging the 'power' in each frequency bin from the frequency spectrum. An analogy of this is a Two phase/vector-lock-in-amplifier with a sweeped LO for the one who knows...
+A very clear, not mathematical explanation of the FFT is given here[3].
+Basically, the DFT formula can be seen as two multipliers and two wave generators stepping in frequency and thereby averaging the outcome for each frequency bin from the frequency spectrum. An electronic device analogy of this is a two phase/vector-lock-in-amplifier with a sweeped LO for the one who knows...
 
 ![DFT-formula](figures/DFT_formula.png  "DFT-formula")
 
