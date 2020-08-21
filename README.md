@@ -1,7 +1,7 @@
 # FFTA - Fastest(?) Fourier Transform for Arduino
 
 # Introduction
-This project is about a fast C implementation of the Discrete Fourier Transform[1],[2] for Arduino. A very clear and not mathematical explanation is given here[3].
+This project is about a fast C implementation of the Discrete Fourier Transform[1],[2] for Arduino.
 FFTA computes the DFT from *real* input data, for example data that comes from the (10-bit) ADC. The fastest time of an 8-point DFT with FFTA measured is 304μs.
 
 With the 8-points data set example: x=[0, 1, 0, 0, 0, 0, 0, 0], the MATLAB function fft(x) returns:
@@ -19,7 +19,8 @@ the *dft4* sketch, for example, returns:
 *0.00,	1.00*
 *0.71,	0.71*
 
-Basically, the DFT formula is nothing more than two wave generators stepping in frequency and calculating the 'power' in each frequency bin from the frequency spectrum.
+A very clear not mathematical explanation of FFT is given here[3].
+Basically, the DFT formula can be seen as two wave generators stepping in frequency and thereby averaging the 'power' in each frequency bin from the frequency spectrum. An analogy of this is a Two phase/vector-lock-in-amplifier with a sweeped LO for the one who knows...
 
 ![DFT-formula](figures/DFT_formula.png  "DFT-formula")
 
