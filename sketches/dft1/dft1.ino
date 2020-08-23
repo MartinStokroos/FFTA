@@ -2,8 +2,10 @@
 *
 * File: dft1.ino
 * Purpose: DFT - floating point implementation using sin() and cos() functions.
-* Version: 1.0.0
+* Version: 1.0.1
 * Date: 13-08-2020
+* Modified: 23-08-2020
+* 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
 *
@@ -32,8 +34,8 @@
 */
 
 #define NSAMPL 8
-int x[] = { 1, 0, 0, 0, 0, 0, 0, 0 };
-//int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
+//int x[] = { 1, 0, 0, 0, 0, 0, 0, 0 };
+int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 
 //#define NSAMPL 16
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -49,9 +51,9 @@ int NS = NSAMPL;
 double ReX[NSAMPL];
 double ImX[NSAMPL];
 
-int L, K, M, N;
+int L, K, N;
 double angle, delta;
-double DC, A;
+double DC, M;
 unsigned long t;
 
 
@@ -90,19 +92,23 @@ void loop() {
     //Serial.print(ReX[K]/NS, 2);
     Serial.print(ReX[K], 2);
     Serial.print("\t");
-    //Serial.println(ImX[K]/NS, 2);
-    Serial.println(ImX[K], 2);    
+    //Serial.print(ImX[K]/NS, 2);
+    Serial.print(ImX[K], 2);
+    Serial.println("i");
     }
 
-  DC = ReX[0]/NS;
+    
   Serial.println();
+  DC = ReX[0]/NS;
+  Serial.print("DC= ");
   Serial.println(DC, 3);
 
   Serial.println();
-  for(M=1; M<=L; M++)
+  Serial.println("magnitudes: ");
+  for(K=1; K<=L; K++)
     {
-    A = sqrt( sq(ImX[M]) + sq(ReX[M]) ) / NS;
-    Serial.println(A, 3);
+    M = sqrt( sq(ImX[K]) + sq(ReX[K]) ) / NS;
+    Serial.println(M, 3);
     }
   while(1) {};
 }

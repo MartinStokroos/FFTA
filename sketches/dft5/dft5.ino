@@ -1,9 +1,10 @@
 /*
-*
 * File: dft5.ino
 * Purpose: DFT with 16bit DDS and 8bit LUT
-* Version: 1.0.0
+* Version: 1.0.1
 * Date: 14-08-2020
+* Modified: 23-08-2020
+* 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
 *
@@ -44,6 +45,7 @@ int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 //#define NSAMPL 64
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
 
 #define RANGE 65536  //phase accumulator range = 2^16.
 #define PHASE_OFFSET_90 16384
@@ -89,8 +91,8 @@ int NS = NSAMPL;
 int ReX[NSAMPL]; //data type reduced to int
 int ImX[NSAMPL]; //data type reduced to int
 
-int L, K, M, N;
-double DC, A;
+int L, K, N;
+double DC, M;
 unsigned long t;
 
 unsigned int deltaPhase;
@@ -115,11 +117,12 @@ void loop() {
     ReX[K] = 0;
     ImX[K] = 0;
     deltaPhase = (unsigned int)(RANGE/NS)*K;
-    phaseIdxI=0;
-    phaseIdxQ=64;
+    phaseIdxI = 0;
+    phaseIdxQ = PHASE_OFFSET_90>>8;
 
     for(N=0; N<NS; N++)
       {
+      //Serial.println(phaseAccu);
       ReX[K] += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxQ); //cos multiplier
       ImX[K] += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxI); //sin multiplier
       //phaseAccu += deltaPhase; //negative frequencies first
@@ -135,19 +138,22 @@ void loop() {
     Serial.print((double)ReX[K]/127, 2);
     //Serial.print((double)ReX[K]/(127*NS), 2);
     Serial.print("\t");
-    Serial.println((double)ImX[K]/127, 2);
-    //Serial.println((double)ImX[K]/(127*NS), 2);    
+    Serial.print((double)ImX[K]/127, 2);
+    //Serial.print((double)ImX[K]/(127*NS), 2);
+    Serial.println("i");    
     }
 
-  DC = (double)ReX[0]/(127*NS);
   Serial.println();
+  DC = (double)ReX[0]/(127*NS);
+  Serial.print("DC= ");
   Serial.println(DC, 3);
 
   Serial.println();
-  for(M=1; M<=L; M++)
+  Serial.println("magnitudes: ");
+  for(K=1; K<=L; K++)
     {
-    A = sqrt( sq((long)ImX[M])+sq((long)ReX[M]) ) / (127*NS);
-    Serial.println(A, 3);
+    M = sqrt( sq(ImX[K]/127)+sq(ReX[K]/127) ) / NS;
+    Serial.println(M, 3);
     }
 
   while(1) {};

@@ -8,16 +8,16 @@ With the 8-points data set example: x=[0, 1, 0, 0, 0, 0, 0, 0], the MATLAB funct
 
 *1.0000+0.0000i   0.7071-0.7071i   0.0000-1.0000i  -0.7071-0.7071i  -1.0000+0.0000i  -0.7071+0.7071i   0.0000+1.0000i   0.7071+0.7071i*
 
-the *dft4* sketch, for example, returns:
+the *dft4* sketch for example, returns:
 
-*1.00,	0.00*
-*0.71,	-0.71*
-*0.00,	-1.00*
-*-0.71,	-0.71*
-*-1.00,	0.00*
-*-0.71,	0.71*
-*0.00,	1.00*
-*0.71,	0.71*
+*1.00  0.00i*
+*0.71  -0.71i*
+*0.00  -1.00i*
+*-0.71  -0.71i*
+*-1.00  0.00i*
+*-0.71  0.71i*
+*0.00  1.00i*
+*0.71  0.71i*
 
 A very clear, not mathematical explanation of the FFT is given here[3].
 Basically, the DFT formula can be seen as two multipliers and two wave generators stepping in frequency and thereby averaging the outcome for each frequency bin from the frequency spectrum. An electronic device analogy of this is a two phase/vector-lock-in-amplifier with a sweeped LO for the one who knows...
@@ -54,14 +54,9 @@ N-points: / Implementation: | dft1 | dft2 | dft3 | dft4 | dft5
 64 | 1073796 | 117644 | 53540 | 38600 | 12868
 
 ### Conclusion
-The computing time of *dft1 - dft4* scales with N^2 as expected. The speed ratio of dft1:dft2:dft3:dft4 is about: 26:3:1.5:1.
-The well known FFT algorithm scales with N*log2(N) [1]. An integer math implementation of the FFT on the Arduino might be faster than the method proposed here, but this needs to be confirmed. In the end for many data points, FFT wins.
-
-# Library
-The FFTA library including an example for an audio spectrum analyzer.
-
-- under construction
-
+The computing time of *dft1 - dft4* scales with N^2 as expected.
+The computing time of the well known FFT algorithm scales with N*log2(N) [1] and is much faster for larger values of N. A FFT for Arduino named EasyFFT and implemented by ABHILASH[6],  is faster because of this scaling law. The output from FFTA seems to be more accurate.
+Using DDS wave generators for the sin and cosine multipliers is just an idea that I wanted to test. It might be interesting with other applications, for example in detecting a singe signal frequency.
 
 [1]: https://en.wikipedia.org/wiki/Fast_Fourier_transform
 
@@ -72,3 +67,5 @@ The FFTA library including an example for an audio spectrum analyzer.
 [4]: http://www.sccon.ca/sccon/fft/fft3.htm
 
 [5]: https://github.com/MartinStokroos/NativeDDS
+
+[6]: https://create.arduino.cc/projecthub/abhilashpatel121/easyfft-fast-fourier-transform-fft-for-arduino-9d2677

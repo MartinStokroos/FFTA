@@ -1,9 +1,10 @@
 /*
-*
 * File: dft3.ino
 * Purpose: DFT with 16bit DDS and 10bit LUT
-* Version: 1.0.0
+* Version: 1.0.1
 * Date: 13-08-2020
+* Modified: 23-08-2020
+* 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
 *
@@ -44,6 +45,7 @@ int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 //#define NSAMPL 64
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
 
 #define RANGE 65536  //phase accumulator range = 2^16.
 #define PHASE_OFFSET_90 16384
@@ -186,8 +188,8 @@ int NS = NSAMPL;
 long ReX[NSAMPL];
 long ImX[NSAMPL];
 
-int L, K, M, N;
-double DC, A;
+int L, K, N;
+double DC, M;
 unsigned long t;
 
 unsigned int deltaPhase;
@@ -212,8 +214,8 @@ void loop() {
     ReX[K] = 0;
     ImX[K] = 0;
     deltaPhase = (unsigned long)(RANGE/NS)*K;
-    phaseIdxI=0;
-    phaseIdxQ=256;
+    phaseIdxI = 0;
+    phaseIdxQ = PHASE_OFFSET_90>>6;
 
     for(N=0; N<NS; N++)
       {
@@ -234,19 +236,22 @@ void loop() {
     Serial.print((double)ReX[K]/511, 2);
     //Serial.print((double)ReX[K]/(511*NS), 2);
     Serial.print("\t");
-    Serial.println((double)ImX[K]/511, 2);
-    //Serial.println((double)ImX[K]/(511*NS), 2);    
+    Serial.print((double)ImX[K]/511, 2);
+    //Serial.print((double)ImX[K]/(511*NS), 2);
+    Serial.println("i");
     }
 
-  DC = (double)ReX[0]/(512*NS);
   Serial.println();
+  DC = (double)ReX[0]/(512*NS);
+  Serial.print("DC= ");
   Serial.println(DC, 3);
 
   Serial.println();
-  for(M=1; M<=L; M++)
+  Serial.println("magnitudes: ");
+  for(K=1; K<=L; K++)
     {
-    A = sqrt( sq(ImX[M])+sq(ReX[M]) ) / (511*NS);
-    Serial.println(A, 3);
+    M = sqrt( sq(ImX[K]/511)+sq(ReX[K]/511) ) / NS;
+    Serial.println(M, 3);
     }
 
   while(1) {};
