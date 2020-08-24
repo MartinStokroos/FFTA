@@ -8,7 +8,7 @@ With the 8-points data set example: *x=[0, 1, 0, 0, 0, 0, 0, 0]*, the MATLAB fun
 
 *1.0000+0.0000i, 0.7071-0.7071i, 0.0000-1.0000i, -0.7071-0.7071i, -1.0000+0.0000i, -0.7071+0.7071i, 0.0000+1.0000i, 0.7071+0.7071i*
 
-the *dft5.ino* sketch returns:
+and for example the *dft5.ino* sketch provides the same answer:
 
 *1.00  0.00i, 0.71  -0.71i, 0.00  -1.00i, -0.71  -0.71i, -1.00  0.00i, -0.71  0.71i, 0.00  1.00i, 0.71  0.71i*
 
@@ -52,6 +52,7 @@ EasyFFT [6] (measured time of FFT function, excluding local variable declaration
 # Conclusion
 The computing time of the *dft1 to dft6* programs scale with N^2 as to be expected. The computing time of the well known FFT algorithm[1] scales with N*log2(N) and is much faster for larger N values.
 The FFT program for Arduino named EasyFFT by ABHILASH[6], outperforms FFTA for N>32. The accuracy of the FFTA programs is fairly good, even with a 16bit DDS/8-bit LUT.
+
 Using a DDS wave generator in place of the angle stepped sin and cosine functions is just an idea that I wanted to test because of its compact form. The idea might be interesting for other applications.
 
 [1]: https://en.wikipedia.org/wiki/Fast_Fourier_transform
