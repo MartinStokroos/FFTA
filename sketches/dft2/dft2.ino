@@ -2,9 +2,9 @@
 *
 * File: dft2.ino
 * Purpose: DFT with 32bit DDS and 10bit LUT
-* Version: 1.0.1
+* Version: 1.0.2
 * Date: 13-08-2020
-* Modified: 23-08-2020
+* Modified: 24-08-2020
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
@@ -185,8 +185,10 @@ const int sin_lut1024[] PROGMEM = {
 
 
 int NS = NSAMPL;
-long ReX[NSAMPL];
-long ImX[NSAMPL];
+long ReX_tmp;
+long ImX_tmp;
+double ReX[NSAMPL];
+double ImX[NSAMPL];
 
 int L, K, N;
 double DC, M;
@@ -211,8 +213,8 @@ void loop() {
   t = micros();
   for(K=0; K<=L; K++)
     {
-    ReX[K] = 0;
-    ImX[K] = 0;
+    ReX_tmp = 0;
+    ImX_tmp = 0;
     deltaPhase = (unsigned long)(RANGE/NS)*K;
     phaseIdxI=0;
     phaseIdxQ = PHASE_OFFSET_90>>22; //adding a fixed phase offset for cos.
@@ -221,28 +223,30 @@ void loop() {
       {
       //Serial.println(phaseIdxI);
       //Serial.println((int)(pgm_read_word(sin_lut1024+phaseIdxQ));
-      ReX[K] += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxQ); //cos multiplier
-      ImX[K] += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxI); //sin multiplier
+      ReX_tmp += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxQ); //cos multiplier
+      ImX_tmp += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxI); //sin multiplier
       //phaseAccu += deltaPhase; //negative frequencies first
       phaseAccu -= deltaPhase; //positive frequencies first
       phaseIdxI = phaseAccu>>22;
       phaseIdxQ = (phaseAccu+PHASE_OFFSET_90)>>22; //adding a fixed phase offset for cos.
       }
+  ReX[K] = (double)ReX_tmp/511; //rescaling
+  ImX[K] = (double)ImX_tmp/511;
   }
   Serial.println(micros()-t);
 
   for(K=0; K<=L; K++)
     {
-    Serial.print((double)ReX[K]/511, 2);
-    //Serial.print((double)ReX[K]/(511*NS), 2);
+    Serial.print(ReX[K], 2);
+    //Serial.print(ReX[K]/NS, 2);
     Serial.print("\t");
-    Serial.print((double)ImX[K]/511, 2);
-    //Serial.print((double)ImX[K]/(511*NS), 2);
-    Serial.println("i");  
+    Serial.print(ImX[K], 2);
+    //Serial.print(ImX[K]/NS, 2);
+    Serial.println("i");   
     }
 
-  Serial.println();
-  DC = (double)ReX[0]/(512*NS);
+  Serial.println(); 
+  DC = ReX[0]/NS;
   Serial.print("DC= ");
   Serial.println(DC, 3);
 
@@ -250,7 +254,7 @@ void loop() {
   Serial.println("magnitudes: ");
   for(K=1; K<=L; K++)
     {
-    M = sqrt( sq(ImX[K]/511)+sq(ReX[K]/511) ) / NS;
+    M = sqrt( sq(ImX[K]) + sq(ReX[K]) ) / NS;  
     Serial.println(M, 3);
     }
 

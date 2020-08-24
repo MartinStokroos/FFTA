@@ -1,9 +1,8 @@
 /*
-* File: dft5.ino
+* File: dft6.ino
 * Purpose: DFT with 16bit DDS and 8bit LUT
-* Version: 1.0.2
-* Date: 14-08-2020
-* Modified: 24-08-2020
+* Version: 1.0.0
+* Date: 24-08-2020
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
@@ -109,8 +108,8 @@ void setup() {
 
 
 void loop() {
-  L = NS-1; //full DFT
-  //L = (int)(NS/2); //single sided spectrum
+  //L = NS-1; //full DFT
+  L = (int)(NS/2); //single sided spectrum
 
   Serial.print("\nDFT t(us)= ");  
   t = micros();

@@ -2,9 +2,9 @@
 *
 * File: dft1.ino
 * Purpose: DFT - floating point implementation using sin() and cos() functions.
-* Version: 1.0.1
+* Version: 1.0.2
 * Date: 13-08-2020
-* Modified: 23-08-2020
+* Modified: 24-08-2020
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA

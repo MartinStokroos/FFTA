@@ -1,9 +1,9 @@
 /*
 * File: dft4.ino
 * Purpose: DFT with 16bit DDS and 8bit LUT
-* Version: 1.0.1
+* Version: 1.0.2
 * Date: 13-08-2020
-* Modified: 23-08-2020
+* Modified: 24-08-2020
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
@@ -44,7 +44,7 @@ int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 
 //#define NSAMPL 64
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
-//            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
 #define RANGE 65536  //phase accumulator range = 2^16.
@@ -88,8 +88,10 @@ const int sin_lut256[] PROGMEM = {
 
 
 int NS = NSAMPL;
-long ReX[NSAMPL];
-long ImX[NSAMPL];
+long ReX_tmp;
+long ImX_tmp;
+double ReX[NSAMPL];
+double ImX[NSAMPL];
 
 int L, K, N;
 double DC, M;
@@ -114,8 +116,8 @@ void loop() {
   t = micros();
   for(K=0; K<=L; K++)
     {
-    ReX[K] = 0;
-    ImX[K] = 0;
+    ReX_tmp = 0;
+    ImX_tmp = 0;
     deltaPhase = (unsigned int)(RANGE/NS)*K;
     phaseIdxI = 0;
     phaseIdxQ = PHASE_OFFSET_90>>8;
@@ -123,29 +125,31 @@ void loop() {
     for(N=0; N<NS; N++)
       {
       //Serial.println(phaseAccu);
-      ReX[K] += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxQ); //cos multiplier
-      ImX[K] += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxI); //sin multiplier
+      ReX_tmp += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxQ); //cos multiplier
+      ImX_tmp += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxI); //sin multiplier
       //phaseAccu += deltaPhase; //negative frequencies first
       phaseAccu -= deltaPhase; //positive frequencies first
       phaseIdxI = phaseAccu>>8;
       phaseIdxQ = (phaseAccu+PHASE_OFFSET_90)>>8; //adding a fixed phase offset for cos.
       }
-  //Serial.println();    
+  ReX[K] = (double)ReX_tmp/127; //rescaling
+  ImX[K] = (double)ImX_tmp/127;
   }
   Serial.println(micros()-t);
 
+
   for(K=0; K<=L; K++)
     {
-    Serial.print((double)ReX[K]/127, 2);
-    //Serial.print((double)ReX[K]/(127*NS), 2);
+    Serial.print(ReX[K], 2);
+    //Serial.print(ReX[K]/NS, 2);
     Serial.print("\t");
-    Serial.print((double)ImX[K]/127, 2);
-    //Serial.print((double)ImX[K]/(127*NS), 2);
+    Serial.print(ImX[K], 2);
+    //Serial.print(ImX[K]/NS, 2);
     Serial.println("i");   
     }
 
   Serial.println(); 
-  DC = (double)ReX[0]/(127*NS);
+  DC = ReX[0]/NS;
   Serial.print("DC= ");
   Serial.println(DC, 3);
 
@@ -153,7 +157,7 @@ void loop() {
   Serial.println("magnitudes: ");
   for(K=1; K<=L; K++)
     {
-    M = sqrt( sq(ImX[K]/127)+sq(ReX[K]/127) ) / NS;
+    M = sqrt( sq(ImX[K]) + sq(ReX[K]) ) / NS;  
     Serial.println(M, 3);
     }
 
