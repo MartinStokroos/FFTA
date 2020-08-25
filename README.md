@@ -41,8 +41,8 @@ Implementation / N-points: | 8 | 16 | 32 | 64
 dft1 | 16436 | 66056 | 265968 | 1074168
 dft2 | 2228 | 7692 | 28368 | 108520
 dft3 | 1144 | 3428 | 11440 | 41052
-dft4 | 888 | 2484 | 7704 | 26240
-dft5 | 824 | 2256 | 6824 | 22816
+dft4 | 844 | 2304 | 6922 | 23400
+dft5 | 784 | 2096 | 6184 | 20236
 EasyFFT [6] (measured time of FFT function, excluding local variable declarations and Serial.print functions) | 1624 | 3800 | 8628 | 19288
 
 ![Dft4 vs. EasyFFT](figures/dft4_vs_easyfft.png  "Dft4 vs. EasyFFT")
