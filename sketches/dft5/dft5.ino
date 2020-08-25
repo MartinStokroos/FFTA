@@ -1,9 +1,9 @@
 /*
 * File: dft5.ino
 * Purpose: DFT with 16bit DDS and 8bit LUT
-* Version: 1.0.2
+* Version: 1.0.3
 * Date: 14-08-2020
-* Modified: 24-08-2020
+* Modified: 25-08-2020
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
