@@ -44,14 +44,13 @@ int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 
 //#define NSAMPL 64
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+//            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
 #define RANGE 65536  //phase accumulator range = 2^16.
 #define PHASE_OFFSET_90 16384
 
-
-const int sin_lut256[] PROGMEM = {
+const char sin_lut256[] PROGMEM = {
   0, 3, 6, 9, 12, 16, 19, 22,
   25, 28, 31, 34, 37, 40, 43, 46,
   49, 51, 54, 57, 60, 63, 65, 68,
@@ -124,9 +123,8 @@ void loop() {
 
     for(N=0; N<NS; N++)
       {
-      //Serial.println(phaseAccu);
-      ReX_tmp += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxQ); //cos multiplier
-      ImX_tmp += x[N] * (int)pgm_read_word(sin_lut256+phaseIdxI); //sin multiplier
+      ReX_tmp += x[N] * (char)pgm_read_word(sin_lut256+phaseIdxQ); //cos multiplier
+      ImX_tmp += x[N] * (char)pgm_read_word(sin_lut256+phaseIdxI); //sin multiplier
       //phaseAccu += deltaPhase; //negative frequencies first
       phaseAccu -= deltaPhase; //positive frequencies first
       phaseIdxI = phaseAccu>>8;
