@@ -2,7 +2,7 @@
 
 # Introduction
 This project is about a fast C implementation of the Discrete Fourier Transform[1],[2] for Arduino.
-FFTA computes the DFT from *real* input data, for example data that comes from the (10-bit) ADC. The fastest time of an 8-point DFT with FFTA measured is 888μs.
+FFTA computes the DFT from *real* input data, for example data that comes from the (10-bit) ADC. The fastest time of an 8-point DFT with FFTA measured is 844μs.
 
 With the 8-points data set example: *x=[0, 1, 0, 0, 0, 0, 0, 0]*, the MATLAB function fft(x) returns:
 
