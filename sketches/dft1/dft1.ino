@@ -2,9 +2,9 @@
 *
 * File: dft1.ino
 * Purpose: DFT - floating point implementation using sin() and cos() functions.
-* Version: 1.0.2
+* Version: 1.0.3
 * Date: 13-08-2020
-* Modified: 24-08-2020
+* Modified: 18-02-2022
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
@@ -59,13 +59,13 @@ unsigned long t;
 
 void setup() {
   Serial.begin(115200);
+            
+  L = NS-1; //length for full DFT
+  //L = (int)(NS/2); //single sided spectrum
 }
 
 
 void loop() {
-  L = NS-1; //full DFT
-  //L = (int)(NS/2); //single sided spectrum
-
   Serial.print("DFT t(us)= ");  
   t = micros();
   for(K=0; K<=L; K++)
