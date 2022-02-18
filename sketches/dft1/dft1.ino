@@ -33,12 +33,12 @@
 *
 */
 
-#define NSAMPL 8
+//#define NSAMPL 8
 //int x[] = { 1, 0, 0, 0, 0, 0, 0, 0 };
-int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
+//int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 
-//#define NSAMPL 16
-//int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#define NSAMPL 16
+int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 //#define NSAMPL 32
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -77,12 +77,13 @@ void loop() {
 
     for(N=0; N<NS; N++)
       {
-      //Serial.println(angle, 2);
+      //Serial.println(angle*360/(2*PI), 2);
       ReX[K] += x[N] * cos(angle);
       ImX[K] += x[N] * sin(angle);
       //angle += delta; //negative frequencies first
       angle -= delta; //positive frequencies first
       }
+  //Serial.println();
   }
   Serial.println(micros()-t);
 
