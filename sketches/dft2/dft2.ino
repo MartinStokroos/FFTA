@@ -2,9 +2,9 @@
 *
 * File: dft2.ino
 * Purpose: DFT with 32bit DDS and 10bit LUT
-* Version: 1.0.3
+* Version: 1.0.4
 * Date: 13-08-2020
-* Modified: 18-02-2022
+* Modified: 19-02-2022
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
@@ -33,12 +33,12 @@
 *
 */
 
-#define NSAMPL 8
+//#define NSAMPL 8
 //int x[] = { 1, 0, 0, 0, 0, 0, 0, 0 };
-int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
+//int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 
-//#define NSAMPL 16
-//int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#define NSAMPL 16
+int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 //#define NSAMPL 32
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -223,13 +223,23 @@ void loop() {
       {
       //Serial.println(phaseIdxI);
       //Serial.println((int)(pgm_read_word(sin_lut1024+phaseIdxQ));
+	  
+	  //Input data range is limited between -63, .. +64 (multiplication exceeds size of int.)
       ReX_tmp += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxQ); //cos multiplier
       ImX_tmp += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxI); //sin multiplier
+	  
+	  //Use this for full int data range. Takes just a little longer.
+	  //ReX_tmp += (long)x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxQ); //cos multiplier.
+      //ImX_tmp += (long)x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxI); //sin multiplier
+	  
       //phaseAccu += deltaPhase; //negative frequencies first
       phaseAccu -= deltaPhase; //positive frequencies first
       phaseIdxI = phaseAccu>>22;
       phaseIdxQ = (phaseAccu+PHASE_OFFSET_90)>>22; //adding a fixed phase offset for cos.
       }
+
+  //ReX[K] = ReX_tmp >> 9; //rescaling. Use if output >> 1, for input data > 1. 
+  //ImX[K] = ImX_tmp >> 9;	  
   ReX[K] = (double)ReX_tmp/511; //rescaling
   ImX[K] = (double)ImX_tmp/511;
   }
@@ -248,14 +258,14 @@ void loop() {
   Serial.println(); 
   DC = ReX[0]/NS;
   Serial.print("DC= ");
-  Serial.println(DC, 3);
+  Serial.println(DC, 2);
 
   Serial.println();
   Serial.println("magnitudes: ");
   for(K=1; K<=L; K++)
     {
     M = sqrt( sq(ImX[K]) + sq(ReX[K]) ) / NS;  
-    Serial.println(M, 3);
+    Serial.println(M, 2);
     }
 
   while(1) {};

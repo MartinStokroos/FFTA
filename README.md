@@ -21,19 +21,26 @@ The DFT-core implemented in the C-language looks like:
 
 ![DFT-loops](figures/dft-loop.png  "DFT-loops")
 
-In FFTA, the trigonometric functions and the phase stepping is replaced for a Direct Digital Synthesis wave generator, using a look-up table[5], which is ultra fast on a micro-controller. Sketch *dft2*, with the 32-bit phase accumulator, has the highest frequency resolution and is more accurate when transforming larger input vectors (to be confirmed).
-There is no built-in overflow check on numbers. The recommended input data types for each example are given in the table below under *Sketches*.
+In FFTA, the trigonometric functions and the phase stepping is replaced for a Direct Digital Synthesis wave generator, using a look-up table[5], which is ultra fast on a micro-controller. Sketch *dft2*, with the 32-bit phase accumulator, has the highest frequency resolution and is more accurate when transforming larger input vectors.
+There is no internal overflow check on numbers. Some comments on the data range are mentioned in the source files. The recommended input data types for each example, are given in the table below under *Sketches*.
 
 # Sketches
-Sketch | Purpose
+Study Sketches | Remarks 
 ------ | -------
 dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: *double* or *int*
 dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data is of type *int*
 dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data is of type *int*
 dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data is of type *char*
-dft5.ino | DFT with 16bit DDS, 8bit LUT. ReX and ImX accumulators are reduced to type *int*. Input data is of type *char*. Be carefully with overflows.
+dft5.ino | DFT with 16bit DDS, 8bit LUT. ReX and ImX accumulators are reduced to type *int*. Input data is of type *char*. 
+ **Application** |
+spectrum.ino | Application example of DFT with 32 bit DDS, 10-bit LUT. Input data is from the ADC. Defaults: 64 points DFT, fs=8ksps, cosine windowing and log scale. SKETCH DOES NOT WORK WITH THE ARDUINO MONITOR. Use a VT100 compatible terminal emulator. 
+
+Example output for Udc = 2.5V + Uac 1V, f sinewave = 2kHz.
+
+![Spectrum](figures/spectrum.png  "Spectrum output")
 
 # Benchmarks
+
 The measured execution times in μs of the different FFT variants running on the Arduino UNO are shown in the table below. The times noted in the table, are for the full spectrum calculation (positive and negative frequencies). The data set that has been used for bench-marking is: *x = 0, 1, 0, 0, ...*  [4].
 
 Implementation / N-points: | 8 | 16 | 32 | 64
