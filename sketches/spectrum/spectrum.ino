@@ -1,9 +1,11 @@
 /*
 * File: spectrum.ino
 * Purpose: DFT Spectrum analyzer
-* Version: 1.0.0
+* Version: 1.1.0
 * Date: 24-02-2022
-* Modified:
+* Modified: 25-02-2022
+* 
+* v1.1.0 -  Added Hanning filter. Improved bit scaling.
 * 
 * Created by: Martin Stokroos
 * 
@@ -32,7 +34,7 @@
 * SOFTWARE.
 *
 * - The ascii terminal output of this program works best with a VT100 compatible terminal emulator like minicom or putty.
-* - Apply a DC+AC voltage (0 <= U <= 5V) to input A0.
+* - Apply a DC+AC voltage (2.5V dc-bias + ac <=2.5Vpeak) to the input A0.
 * - Monitor the sample clock rate (2*fs) on pin 9.
 *
 */
@@ -42,14 +44,17 @@
 #define PIN_SCLK 9  //sampling clock output
 #define RANGE 4294967296UL  //phase accumulator range = 2^32.
 #define PHASE_OFFSET_90 1073741824UL
+#define PHASE_OFFSET_270 3221225472UL
 
 //DFT
-#define CR 1000 //fs = 8000000/CR = 8kHz 
-#define WINDOWING // comment/uncomment to select
+#define CR 1000 //CR = 8000000/fs = 8000000/8kHz = 1000. Not tested above 8kHz!
+//#define COSWIN // uncomment to select cosine window
+#define HANNING // uncomment to select Hanning (raised cosine) window, choose one window a time!
 #define LOG // comment/uncomment to select lin/log scale
+#define PLOTTING // uncomment to turn on spectrum plotting
 const byte DFT_BITS  =  6;  //DFT size, number of bits.
 const size_t NS = 1 << DFT_BITS; //Number of Samples
-const byte DFT_SCALING = 9 + DFT_BITS;
+const byte DFT_SCALING = 8 + DFT_BITS;
 
 const int sin_lut1024[] PROGMEM = {
   0, 3, 6, 9, 13, 16, 19, 22,
@@ -188,7 +193,9 @@ long ReX[NS];
 long ImX[NS];
 int X[(NS >> 1) + 1];
 unsigned long winAcc;
-unsigned long winStep = (unsigned long)( (RANGE >> 1) / (NS - 1) ); //step size for cosine window table.
+unsigned long cosStep = (unsigned long)( (RANGE >> 1) / (NS - 1) ); //step size for cosine window.
+//unsigned long cosStep = (unsigned long)( RANGE / (NS - 1) ) >> 1; //step size for cosine window.
+unsigned long hanningStep = (unsigned long)( RANGE / (NS - 1) ); //step size for hanning window.
 unsigned int winIdx;
 unsigned long wtmp;
 unsigned long deltaPhase;
@@ -196,7 +203,7 @@ unsigned long phaseAccu;
 unsigned int phaseIdxI;
 unsigned int phaseIdxQ;
 volatile int samplIdx = 0;
-volatile int adcInBuff[NS];
+volatile int adcVal[NS];
 volatile bool adcRdy = false;
 
 struct Polar {
@@ -241,12 +248,12 @@ void setup() {
   /*
    * TIMER1 initialization for mode 14.
    * Timer 1 generates the sampling clock
-   * prescaling=1, f=fclk/Ns, OCRoffset=Ns/2 for 50% duty cycle on pin OC1A
+   * prescaling=1, f=fclk/CR, OCRoffset=CR/2 for 50% duty cycle on pin OC1A
    * output on OC1A (pin 9)
    */
   TCCR1A = 0b10000010; //fast PWM, TOP=ICR1, Clear OC1A on compare match (set output to low).
   TCCR1B = 0b00011001; //no pre scaling, CTC
-  ICR1 = CR - 1 ; // sample period pre divider
+  ICR1 = CR - 1;
   OCR1A = (CR >> 1);
   bitSet(TIMSK1, TOIE1); // enable Timer1 Interrupt
   sei(); // enable all interrupts
@@ -262,18 +269,35 @@ void setup() {
 void loop() {
   if (adcRdy)
   {
-#ifdef WINDOWING
+#ifdef COSWIN
     //Cosine window
     winIdx = 0;
     winAcc = 0;
     for (N = 0; N < NS; N++) {
-      //Serial.print(adcInBuff[N]);
+      //Serial.print(adcVal[N]);
       //Serial.print("\t");
-      wtmp = ( (long)adcInBuff[N] * (int)pgm_read_word(sin_lut1024 + winIdx) );
-      winAcc += winStep;
+      //Serial.println( (int)pgm_read_word(sin_lut1024 + winIdx) );
+      wtmp = ( (long)adcVal[N] * (int)pgm_read_word(sin_lut1024 + winIdx) ); //512 * 512 max.
+      winAcc += cosStep;
       winIdx = winAcc >> 22;
-      adcInBuff[N] = wtmp >> 9;
-      //Serial.println(adcInBuff[N]);
+      adcVal[N] = wtmp >> 8; //bring back to 10 bits.
+      //Serial.println(adcVal[N]);
+    }
+#endif
+
+#ifdef HANNING
+    //Raised cosine window
+    winIdx = PHASE_OFFSET_270 >> 22; //adding a fixed phase offset for cos
+    winAcc = 0;
+    for (N = 0; N < NS; N++) {
+      //Serial.print(adcVal[N]);
+      //Serial.print("\t");
+      //Serial.println( ((int)pgm_read_word(sin_lut1024 + winIdx) + 0x1FF) );
+      wtmp = ( (long)adcVal[N] * ((int)pgm_read_word(sin_lut1024 + winIdx) + 0x1FF) ); //512*1024 max.
+      winAcc += hanningStep;
+      winIdx = (winAcc + PHASE_OFFSET_270) >> 22;
+      adcVal[N] = wtmp >> 9; //bring back to 10 bits
+      //Serial.println(adcVal[N]);
     }
 #endif
 
@@ -292,18 +316,23 @@ void loop() {
         //Serial.println(phaseIdxI);
         //Serial.println((int)(pgm_read_word(sin_lut1024 + phaseIdxQ));
         // DFT of ADC data:
-        ReX[K] += (long)adcInBuff[N] * (int)pgm_read_word(sin_lut1024 + phaseIdxQ); //cos multiplier
-        ImX[K] += (long)adcInBuff[N] * (int)pgm_read_word(sin_lut1024 + phaseIdxI); //sin multiplier
+        ReX[K] += (long)adcVal[N] * (int)pgm_read_word(sin_lut1024 + phaseIdxQ); //cos multiplier
+        ImX[K] += (long)adcVal[N] * (int)pgm_read_word(sin_lut1024 + phaseIdxI); //sin multiplier
         //phaseAccu += deltaPhase; //negative frequencies first
         phaseAccu -= deltaPhase; //positive frequencies first
         phaseIdxI = phaseAccu >> 22;
         phaseIdxQ = (phaseAccu + PHASE_OFFSET_90) >> 22; //adding a fixed phase offset for cos.
       }
-      ReX[K] = ReX[K] >> DFT_SCALING; //scale back to 10 bits max.
+      ReX[K] = ReX[K] >> DFT_SCALING; //bring back to 10 bits.
       ImX[K] = ImX[K] >> DFT_SCALING;
-
+      //Serial.print(ReX[K]);
+      //Serial.print("\t");
+      //Serial.print(ImX[K]);
+      //Serial.print("i");
+      //Serial.print("\t");
       ans = cordic( (int)ReX[K], (int)ImX[K] );
-      //Serial.print(ans.radius);
+      //Serial.println(ans.radius);
+      //Serial.println( sqrt(sq(ImX[K]) + sq(ReX[K])) ); //alternative way to calculate the absolute values.
 #ifdef LOG
       X[K] = Log2( (unsigned long)ans.radius + 1 ); //calculate 100*ld(x)
 #endif
@@ -312,24 +341,21 @@ void loop() {
 #endif
     }// end of DFT
     digitalWrite(PIN_LED, false);
+    //Serial.println();
 
+#ifdef PLOTTING
+    //Plot spectrum vertical in terminal
     for (K = 0; K <= L; K++)
     {
-      //Serial.print(ReX[K]);
-      //Serial.print("\t");
-      //Serial.print(ImX[K]);
-      //Serial.print("i");
-      //Serial.print("\t");
-      //Serial.print( sqrt(sq(ImX[K]) + sq(ReX[K])) ); //alternative way to calculate the absolute values.
-
-      //plot spectrum vertical
       Serial.print("\x1B[0K"); //clear line
       for (N = 0; N <= (int)(X[K] / 50); N++) {
         Serial.print("*");
-      }
+      }  
       Serial.println(); //LF+CR
     }
     Serial.print("\x1B[H"); //go to home position
+#endif
+    
     adcRdy = false;
   }
 }
@@ -438,8 +464,9 @@ ISR(ADC_vect) {
   if (!adcRdy)
   {
     // read the selected ADC input channel
-    adcInBuff[samplIdx] = ADCL; // store low byte;
-    adcInBuff[samplIdx] += ADCH << 8; // store high byte
+    adcVal[samplIdx] = ADCL; // store low byte;
+    adcVal[samplIdx] += ADCH << 8; // store high byte
+    adcVal[samplIdx] -= 0x1FF; //subtrackt offset.
     samplIdx++;
 
     if (samplIdx >= NS) {

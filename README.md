@@ -33,9 +33,9 @@ dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data is of type *int*
 dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data is of type *char*
 dft5.ino | DFT with 16bit DDS, 8bit LUT. ReX and ImX accumulators are reduced to type *int*. Input data is of type *char*. 
  **Application** |
-spectrum.ino | Application example of DFT with 32 bit DDS, 10-bit LUT. Input data is from the ADC. Defaults: 64 points DFT, fs=8ksps, cosine windowing and log scale. SKETCH DOES NOT WORK WITH THE ARDUINO MONITOR. Use a VT100 compatible terminal emulator. 
+spectrum.ino | Application example of DFT with 32 bit DDS, 10-bit LUT. Input data is from the ADC input A0. Apply AC voltage on 2.5V DC bias.<br />Defaults: 64 points DFT, fs=8ksps, Hanning windowing and log scale. SPECTRUM PLOTTING DOES NOT WORK IN THE ARDUINO MONITOR. Use a VT100 compatible terminal emulator like minicom or PuTTY. 
 
-Example output for Udc = 2.5V + Uac 1V, f sinewave = 2kHz.
+Example output for Udc = 2.5V + Uac 1V, f sinewave = 2kHz. (Spectrum is now greatly enhanced compared to picture below.)
 
 ![Spectrum](figures/spectrum.png  "Spectrum output")
 
