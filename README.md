@@ -21,8 +21,7 @@ The DFT-core implemented in the C-language looks like:
 
 ![DFT-loops](figures/dft-loop.png  "DFT-loops")
 
-In FFTA, the trigonometric functions and the phase stepping is replaced for a Direct Digital Synthesis wave generator, using a look-up table[5], which is ultra fast on a micro-controller. Sketch *dft2*, with the 32-bit phase accumulator, has the highest frequency resolution and is more accurate when transforming larger input vectors.
-There is no internal overflow check on numbers. Some comments on the data range are mentioned in the source files. The recommended input data types for each example, are given in the table below under *Sketches*.
+In FFTA, the trigonometric functions and the phase stepping is replaced for a Direct Digital Synthesis wave generator, using a look-up table[5], which is ultra fast on a micro-controller. Sketch *dft2*, with the 32-bit phase accumulator, has the highest frequency resolution and is more accurate when transforming larger input vectors. There is no internal overflow check on numbers. The recommended input data type for each example, are given in the table below under *Sketches*.
 
 # Sketches
 Study Sketches | Remarks 
@@ -41,7 +40,7 @@ Example spectrum output with Udc = 2.5V + Uac = 1V, f_sinewave = 2kHz:
 
 # Benchmarks
 
-The measured runtime in μs of the different DFT variants running on the Arduino UNO are shown in the table below. The times noted in the table, are for the full spectrum calculation (positive and negative frequencies). The data set that has been used for bench-marking is: *x = 0, 1, 0, 0, ...*  [4].
+The measured runtime in μs of the different DFT variants running on the Arduino UNO are shown in the table below. The times noted in the table are for the full spectrum calculation (positive and negative frequencies). The data set used for bench-marking is: *x = 0, 1, 0, 0, ...*  [4].
 
 Implementation / N-points: | 8 | 16 | 32 | 64
 -------------------------- | - | -- | -- | --
