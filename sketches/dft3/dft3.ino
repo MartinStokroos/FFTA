@@ -1,9 +1,11 @@
 /*
 * File: dft3.ino
 * Purpose: DFT with 16bit DDS and 10bit LUT
-* Version: 1.0.3
+* Version: 1.0.4
 * Date: 13-08-2020
-* Modified: 18-02-2022
+* Modified: 04-03-2022
+* 
+* v1.0.4 : optimized a few data types.
 * 
 * Created by: Martin Stokroos
 * URL: https://github.com/MartinStokroos/FFTA
@@ -32,9 +34,9 @@
 *
 */
 
-#define NSAMPL 8
+//#define NSAMPL 8
 //int x[] = { 1, 0, 0, 0, 0, 0, 0, 0 };
-int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
+//int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 
 //#define NSAMPL 16
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -42,8 +44,8 @@ int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 //#define NSAMPL 32
 //int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-//#define NSAMPL 64
-//int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+#define NSAMPL 64
+int x[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
@@ -51,7 +53,7 @@ int x[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
 #define PHASE_OFFSET_90 16384
 
 
-const int sin_lut1024[] PROGMEM = { // range from -512 to 511?
+const int sin_lut1024[] PROGMEM = {
   0, 3, 6, 9, 13, 16, 19, 22,
   25, 28, 31, 34, 38, 41, 44, 47,
   50, 53, 56, 59, 63, 66, 69, 72,
@@ -215,7 +217,7 @@ void loop() {
     {
     ReX_tmp = 0;
     ImX_tmp = 0;
-    deltaPhase = (unsigned long)(RANGE/NS)*K;
+    deltaPhase = (RANGE/NS)*K;
     phaseIdxI = 0;
     phaseIdxQ = PHASE_OFFSET_90>>6;
 
@@ -223,8 +225,8 @@ void loop() {
       {
       //Serial.println(phaseIdxI);
       //Serial.println((int)(pgm_read_word(sin_lut1024+phaseIdxI)-0x1FF));
-      ReX_tmp += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxQ); //cos multiplier
-      ImX_tmp += x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxI); //sin multiplier
+      ReX_tmp += (long)x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxQ); //cos multiplier
+      ImX_tmp += (long)x[N] * (int)pgm_read_word(sin_lut1024+phaseIdxI); //sin multiplier
       //phaseAccu += deltaPhase; //negative frequencies first
       phaseAccu -= deltaPhase; //positive frequencies first
       phaseIdxI = phaseAccu>>6;

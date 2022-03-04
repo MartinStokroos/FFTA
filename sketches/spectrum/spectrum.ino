@@ -1,11 +1,12 @@
 /*
 * File: spectrum.ino
 * Purpose: DFT Spectrum analyzer
-* Version: 1.1.0
+* Version: 1.1.1
 * Date: 24-02-2022
-* Modified: 25-02-2022
+* Modified: 04-03-2022
 * 
-* v1.1.0 -  Added Hanning filter. Improved bit scaling.
+* v1.1.0 - Added Hanning filter. Improved bit scaling.
+* v1.1.1 - Optimized the data type for wtmp
 * 
 * Created by: Martin Stokroos
 * 
@@ -197,7 +198,7 @@ unsigned long cosStep = (unsigned long)( (RANGE >> 1) / (NS - 1) ); //step size 
 //unsigned long cosStep = (unsigned long)( RANGE / (NS - 1) ) >> 1; //step size for cosine window.
 unsigned long hanningStep = (unsigned long)( RANGE / (NS - 1) ); //step size for hanning window.
 unsigned int winIdx;
-unsigned long wtmp;
+long wtmp;
 unsigned long deltaPhase;
 unsigned long phaseAccu;
 unsigned int phaseIdxI;

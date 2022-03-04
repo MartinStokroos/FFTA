@@ -28,37 +28,37 @@ There is no internal overflow check on numbers. Some comments on the data range 
 Study Sketches | Remarks 
 ------ | -------
 dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: *double* or *int*
-dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data is of type *int*
-dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data is of type *int*
-dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data is of type *char*
-dft5.ino | DFT with 16bit DDS, 8bit LUT. ReX and ImX accumulators are reduced to type *int*. Input data is of type *char*. 
+dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data of type *int* 
+dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data of type *int* 
+dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data of type *char* 
+dft5.ino | DFT with 16bit DDS, 8bit LUT. ReX and ImX accumulators are reduced to type *int* and input data of type *char*. 
  **Application** |
-spectrum.ino | Application example of DFT with 32 bit DDS, 10-bit LUT. Input data is from the ADC input A0. Apply AC voltage on 2.5V DC bias.<br />Defaults: 64 points DFT, fs=8ksps, Hanning windowing and log scale. SPECTRUM PLOTTING DOES NOT WORK IN THE ARDUINO MONITOR. Use a VT100 compatible terminal emulator like minicom or PuTTY. 
+spectrum.ino | Application example of DFT with 32 bit DDS, 10-bit LUT. Input data is from the ADC input A0. Apply AC voltage on 2.5V DC bias.<br />Defaults: 64 points DFT, fs=8ksps with Hanning windowing and log scale. SPECTRUM PLOTTING DOES NOT WORK IN THE ARDUINO MONITOR. Use a VT100 compatible terminal emulator like minicom or PuTTY. 
 
-Example output for Udc = 2.5V + Uac 1V, f sinewave = 2kHz. (Spectrum is now greatly enhanced compared to picture below.)
+Example spectrum output with Udc = 2.5V + Uac = 1V, f_sinewave = 2kHz:
 
 ![Spectrum](figures/spectrum.png  "Spectrum output")
 
 # Benchmarks
 
-The measured execution times in μs of the different FFT variants running on the Arduino UNO are shown in the table below. The times noted in the table, are for the full spectrum calculation (positive and negative frequencies). The data set that has been used for bench-marking is: *x = 0, 1, 0, 0, ...*  [4].
+The measured runtime in μs of the different DFT variants running on the Arduino UNO are shown in the table below. The times noted in the table, are for the full spectrum calculation (positive and negative frequencies). The data set that has been used for bench-marking is: *x = 0, 1, 0, 0, ...*  [4].
 
 Implementation / N-points: | 8 | 16 | 32 | 64
 -------------------------- | - | -- | -- | --
 dft1 | 16436 | 66056 | 265968 | 1074168
 dft2 | 2228 | 7692 | 28368 | 108520
-dft3 | 1144 | 3428 | 11440 | 41052
+dft3 | 1424 | 4540 | 15848 | 58620 
 dft4 | 844 | 2304 | 6922 | 23400
 dft5 | 784 | 2096 | 6184 | 20236
-EasyFFT [6] (measured time of FFT function, excluding local variable declarations and Serial.print functions) | 1624 | 3800 | 8628 | 19288
+EasyFFT [6] (measured runtime of FFT function, excluding local variable declarations and Serial.print functions) | 1624 | 3800 | 8628 | 19288
 
-![Dft4 vs. EasyFFT](figures/dft4_vs_easyfft.png  "Dft4 vs. EasyFFT")
+
 
 # Conclusion
-The computing time of the *dft1 to dft5* programs do scale with N^2 as was expected. The computing time of the well known FFT algorithm[1] scales with N*log2(N) and is much faster for larger N values. The accuracy of the FFTA programs seems not bad, even with a 16bit DDS/8-bit LUT.
-The FFT program for Arduino named EasyFFT by ABHILASH[6], outperforms FFTA for N>32. Beyond N=64 or N=128, the Arduino will sooner or later run out of memory for FFT programs achieving a comparable accuracy. So, for small processors and N up to 32, FFTA is a good alternative.
+The computing time of the *dft1 to dft5* programs roughly scale with N^2 as was expected. The computing time of the well known FFT algorithm[1] scales with N*log2(N) and is much faster for larger values of N. The accuracy of the DFT variants are practically usable, even with a 16bit DDS/8-bit LUT core.
+The FFT program for Arduino named EasyFFT by ABHILASH[6], outperforms *dft3* very quickly for N>8. For monitoring or detecting a single frequency, the DFT principle is more efficient.
 
-Using a DDS wave generator in place of angle stepped sin and cosine functions, is just an idea that I wanted to test because of its compact and elegant implementation form. This idea might be interesting for other applications.
+Using a DDS wave generator in place of using trigonometric functions, is just an idea that I wanted to test because of its compact and elegant implementation form. This idea might be interesting for other applications.
 
 [1]: https://en.wikipedia.org/wiki/Fast_Fourier_transform
 
