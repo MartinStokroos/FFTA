@@ -1,13 +1,13 @@
 # FFTA - Fastest(?) Fourier Transform for Arduino
 
 # Introduction
-This project is about a fast C implementation of the Discrete Fourier Transform[1],[2] for Arduino. A very clear and non mathematical explanation about the FFT is given here:[3]. FFTA computes the DFT from *real* input data, for example data that comes from the (10-bit) ADC. The fastest time measured for an 8-point DFT with FFTA is 844μs.
+This project is about a fast C implementation of the Discrete Fourier Transform[1],[2] for Arduino. The provided DFT/FFT routines are computing the spectra from *real* input data, for example, data that comes from the (10-bit) ADC. The runtime measured for an 8-point DFT with ADC data is 844μs and for an 8-point FFT xxxμs.
 
 With the 8-points data set example: *x=[0, 1, 0, 0, 0, 0, 0, 0]*, MATLAB's fft(x) returns:
 
 *1.0000+0.0000i, 0.7071-0.7071i, 0.0000-1.0000i, -0.7071-0.7071i, -1.0000+0.0000i, -0.7071+0.7071i, 0.0000+1.0000i, 0.7071+0.7071i*
 
-and the output from example *dft5.ino* looks very similar:
+The output from example *dft5.ino* looks very similar:
 
 *1.00  0.00i, 0.71  -0.71i, 0.00  -1.00i, -0.71  -0.71i, -1.00  0.00i, -0.71  0.71i, 0.00  1.00i, 0.71  0.71i*
 
@@ -22,13 +22,16 @@ The DFT-core implemented in the C-language looks like:
 # Sketches
 Study Sketches | Remarks 
 ------ | -------
-dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: *double* or *int*
-dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data of type *int* 
-dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data of type *int* 
-dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data of type *char* 
-dft5.ino | DFT with 16bit DDS, 8bit LUT. ReX and ImX accumulators are reduced to type *int* and input data of type *char*. 
- **Application** |
+dft1.ino | DFT - floating point implementation using sin() and cos() functions. Input data type: *double* or *int* for real part only.
+dft2.ino | DFT with 32bit DDS, 10bit Look-up table (LUT). Input data of type *int*, reals only.
+dft3.ino | DFT with 16bit DDS, 10bit LUT. Input data of type *int*, reals only.
+dft4.ino | DFT with 16bit DDS, 8bit LUT. Input data of type *char*, reals only. 
+dft5.ino | DFT with 16bit DDS, 8bit LUT. ReX and ImX accumulators are reduced to *int*-types, with input data type *char*, reals only.
+fft.ino | FFT with 16bit DDS, 10bit LUT. Input data type *double* with real+imaginary input.
+ffta.ino | FFT with 16bit DDS, 10bit LUT. Input data of type *int*, reals only.
+ **Applications** | 
 spectrum.ino | Application example of DFT with 32 bit DDS, 10-bit LUT. Input data is from the ADC input A0. Apply AC voltage on 2.5V DC bias.<br />Defaults: 64 points DFT, fs=8ksps with Hanning windowing and log scale. SPECTRUM PLOTTING DOES NOT WORK IN THE ARDUINO MONITOR. Use a VT100 compatible terminal emulator like minicom or PuTTY. 
+spectrum2.ino | FFT
 
 Example spectrum output with Udc = 2.5V + Uac = 1V, f_sinewave = 2kHz:
 
@@ -53,9 +56,7 @@ Using a DDS wave generator in place of using trigonometric functions, is just an
 
 [2]: http://www.fftw.org/
 
-[3]: https://www.earlevel.com/main/2002/08/31/a-gentle-introduction-to-the-fft/
+[3]: http://www.sccon.ca/sccon/fft/fft3.htm
 
-[4]: http://www.sccon.ca/sccon/fft/fft3.htm
-
-[5]: https://www.analog.com/en/resources/analog-dialogue/articles/all-about-direct-digital-synthesis.html
+[4]: https://www.analog.com/en/resources/analog-dialogue/articles/all-about-direct-digital-synthesis.html
 
